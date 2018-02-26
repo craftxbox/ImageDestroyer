@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{50A8DA89-18CC-411F-ACFE-2CF232D130A9}</ProjectGuid>
+    <ProjectGuid>{F80F255C-3E6E-4D65-9131-866224C5B0A6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ImageDestroyer</RootNamespace>

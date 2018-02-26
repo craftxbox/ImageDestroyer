@@ -18,6 +18,7 @@ namespace WindowsFormsApplication3
         public Form1()
         {
             InitializeComponent();
+            Form.CheckForIllegalCrossThreadCalls = false;
         }
 
         delegate void SetTextCallback(string text);
@@ -67,43 +68,63 @@ namespace WindowsFormsApplication3
             {
                 try
                 {
-                    destroyedImage = (Bitmap)pictureBox1.Image;
-                    int fuckingWidth = pictureBox1.Image.Width;
-                    int fuckingHeight = pictureBox1.Image.Height;
-                    foreach (int y in Enumerable.Range(0, fuckingHeight))
+                    new Thread(() =>
                     {
-                        foreach (int x in Enumerable.Range(0, fuckingWidth))
+                        button1.Enabled = false;
+                        destroyedImage = (Bitmap)pictureBox1.Image;
+                        int fuckingWidth = pictureBox1.Image.Width;
+                        int fuckingHeight = pictureBox1.Image.Height;
+                        foreach (int y in Enumerable.Range(0, fuckingHeight))
                         {
+                            int lastx = 0;
+                            foreach (int x in Enumerable.Range(0, fuckingWidth))
+                            {
 
-                            Color c = destroyedImage.GetPixel(x, y);
-                            c = setRandomColor(c);
-                            destroyedImage.SetPixel(x, y, c);
-                            this.SetText(x + ", " + y);
+                                Color c = destroyedImage.GetPixel(x, y);
+                                c = setRandomColor(c);
+                                destroyedImage.SetPixel(x, y, c);
+                                if (checkBox2.Checked && checkBox3.Checked)
+                                {
+                                    this.Text = "ImageDestroyer :: " + x + ", " + y;
+                                    lastx = x;
+                                }
+                                if (checkBox1.Checked && checkBox3.Checked)
+                                {
+                                    pictureBox2.Image = destroyedImage;
+                                    Thread.Sleep(7);
+                                }
+                                
 
+                            }
+                            if (checkBox2.Checked)
+                                this.Text = "ImageDestroyer :: " + lastx + ", " + y;
+                            if (checkBox1.Checked)
+                                pictureBox2.Image = destroyedImage;
+                            Thread.Sleep(7);
 
                         }
                         pictureBox2.Image = destroyedImage;
-                        this.Update();
-
-                    }
-                    this.SetText("DONE");
-                    var confirmResult2 = MessageBox.Show("This is your LAST CHANCE! Press \"No\" to cancel overwriting the file!",
-                         "Final Destruction Confirmation",
-                         MessageBoxButtons.YesNo);
-                    if (confirmResult2 == DialogResult.Yes)
-                    {
-                        Image out1 = (Image)destroyedImage;
-                        Bitmap output = (Bitmap)out1;
-                        if (filePath.EndsWith(".jpg")){
-                            output.Save(filePath, ImageFormat.Jpeg);
-                        } else
+                        this.Text = "ImageDestroyer :: DONE";
+                        button1.Enabled = true;
+                        var confirmResult2 = MessageBox.Show("This is your LAST CHANCE! Press \"No\" to cancel overwriting the file!",
+                             "Final Destruction Confirmation",
+                             MessageBoxButtons.YesNo);
+                        if (confirmResult2 == DialogResult.Yes)
                         {
-                            output.Save(filePath, ImageFormat.Png);
+                            Image out1 = (Image)destroyedImage;
+                            Bitmap output = (Bitmap)out1;
+                            if (filePath.EndsWith(".jpg"))
+                            {
+                                output.Save(filePath, ImageFormat.Jpeg);
+                            }
+                            else
+                            {
+                                output.Save(filePath, ImageFormat.Png);
+                            }
+
+
                         }
-                       
-                        
-                    }
-                    
+                    }).Start();
                 }
 
                 catch (Exception ex)
